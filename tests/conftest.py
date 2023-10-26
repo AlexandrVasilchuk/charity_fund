@@ -57,7 +57,10 @@ engine = create_async_engine(
     connect_args={'check_same_thread': False},
 )
 TestingSessionLocal = sessionmaker(
-    class_=AsyncSession, autocommit=False, autoflush=False, bind=engine,
+    class_=AsyncSession,
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
 )
 
 

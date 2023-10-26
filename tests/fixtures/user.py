@@ -1,6 +1,10 @@
 import pytest
 from conftest import (
-    app, current_superuser, current_user, get_async_session, override_db
+    app,
+    current_superuser,
+    current_user,
+    get_async_session,
+    override_db,
 )
 from fastapi.testclient import TestClient
 

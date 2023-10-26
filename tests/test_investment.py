@@ -20,38 +20,48 @@ def test_project_exist_non_donations(superuser_client, charity_project):
     )
 
 
-def test_fully_invested_amount_for_two_projects(user_client, charity_project,
-                                                charity_project_nunchaku):
+def test_fully_invested_amount_for_two_projects(
+    user_client, charity_project, charity_project_nunchaku
+):
     common_asser_msg = (
         'Создано 2 пустых проекта. Тест создает 2 пожертвования которые '
         'полностью покрывают инвестиции первого проекта. Второй проект должен '
         'оставаться не инвестированным.'
     )
-    user_client.post('/donation/', json={
-        'full_amount': 500000,
-    })
-    user_client.post('/donation/', json={
-        'full_amount': 500000,
-    })
+    user_client.post(
+        '/donation/',
+        json={
+            'full_amount': 500000,
+        },
+    )
+    user_client.post(
+        '/donation/',
+        json={
+            'full_amount': 500000,
+        },
+    )
     assert charity_project.fully_invested, common_asser_msg
     assert not charity_project_nunchaku.fully_invested, common_asser_msg
     assert charity_project_nunchaku.invested_amount == 0, common_asser_msg
 
 
 def test_donation_to_little_invest_project(
-        user_client, charity_project_little_invested, charity_project_nunchaku
+    user_client, charity_project_little_invested, charity_project_nunchaku
 ):
     common_asser_msg = (
         'Создано 2 проекта, один из которых частично инвестирован. Тест '
         'создает пожертвование. В первый проект пожертвования должны '
         'добавиться, а второй остатся не тронутым.'
     )
-    user_client.post('/donation/', json={
-        'full_amount': 900,
-    })
-    assert not charity_project_little_invested.fully_invested, common_asser_msg
-    assert charity_project_little_invested.invested_amount == 1000, (
-        common_asser_msg
+    user_client.post(
+        '/donation/',
+        json={
+            'full_amount': 900,
+        },
     )
+    assert not charity_project_little_invested.fully_invested, common_asser_msg
+    assert (
+        charity_project_little_invested.invested_amount == 1000
+    ), common_asser_msg
     assert not charity_project_nunchaku.fully_invested, common_asser_msg
     assert charity_project_nunchaku.invested_amount == 0, common_asser_msg
