@@ -17,6 +17,7 @@ target_metadata = Base.metadata
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
