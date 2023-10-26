@@ -1,5 +1,6 @@
 import asyncio
 import os
+from logging.config import fileConfig
 
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
@@ -13,6 +14,8 @@ config = context.config
 config.set_main_option('sqlalchemy.url', os.environ['DATABASE_URL'])
 target_metadata = Base.metadata
 
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
