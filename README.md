@@ -48,7 +48,13 @@
 
    *Секретный ключ можно сгенерировать [тут](https://djecrety.ir/)*
 
-3. **Запусти локальный сервер**
+3. **Запусти базу данных**
+
+    ```shell
+    alembic revision --autogenerate
+    alembic upgrade head
+    ```
+4. **Запусти локальный сервер**
 
     ```shell
     uvicorn app.main:app

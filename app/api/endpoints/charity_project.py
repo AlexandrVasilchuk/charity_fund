@@ -1,22 +1,18 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.validators import (
-    access_project_update,
-    check_name_duplicate,
-    check_project_exists,
-    invested_in_project,
-    new_full_amount_greater,
-)
+from app.api.validators import (access_project_update, check_name_duplicate,
+                                check_project_exists, invested_in_project,
+                                new_full_amount_greater)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charity_project_crud
-from app.schemas.charity_project import (
-    CharityProjectCreate,
-    CharityProjectDB,
-    CharityProjectUpdate,
-)
-from app.services.investments import investments
+from app.models import Donation
+from app.schemas.charity_project import (CharityProjectCreate,
+                                         CharityProjectDB,
+                                         CharityProjectUpdate)
+from app.services.investments import invest
 
 router = APIRouter()
 
@@ -32,8 +28,18 @@ async def create_project(
     session: AsyncSession = Depends(get_async_session),
 ):
     await check_name_duplicate(new_project.name, session)
-    new_project = await charity_project_crud.create(session, new_project)
-    await investments(session)
+    execute_donations = await session.execute(
+        select(Donation).where(Donation.fully_invested.is_(False))
+    )
+    not_closed_donation = execute_donations.scalars().all()
+    new_project = await charity_project_crud.create(
+        session, new_project, commit=False
+    )
+    updated_objects = invest(new_project, not_closed_donation)
+    for instance in updated_objects:
+        session.add(instance)
+
+    await session.commit()
     await session.refresh(new_project)
     return new_project
 
