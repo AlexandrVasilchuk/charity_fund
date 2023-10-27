@@ -10,7 +10,4 @@ class Donation(ProjectDonationBase):
     comment = Column(Text)
 
     def __repr__(self):
-        attributes = re.sub(
-            r'\)$', f', {self.user_id}, {self.comment})', super().__repr__()
-        )
-        return attributes
+        return super().__repr__()[:-1] + f', {self.user_id}, {self.comment})'

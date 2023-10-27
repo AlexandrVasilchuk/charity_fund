@@ -12,7 +12,4 @@ class CharityProject(ProjectDonationBase):
     description = Column(Text, nullable=False)
 
     def __repr__(self):
-        attributes = re.sub(
-            r'\)$', f', {self.name}, {self.description})', super().__repr__()
-        )
-        return attributes
+        return super().__repr__()[:-1] + f', {self.name}, {self.description})'
