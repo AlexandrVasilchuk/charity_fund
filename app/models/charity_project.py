@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import Column, String, Text
 
 from app.models.base import ProjectDonationBase
@@ -10,4 +12,7 @@ class CharityProject(ProjectDonationBase):
     description = Column(Text, nullable=False)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}{self.name, self.description}'
+        attributes = re.sub(
+            r'\)$', f', {self.name}, {self.description})', super().__repr__()
+        )
+        return attributes

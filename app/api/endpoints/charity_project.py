@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.validators import (access_project_update, check_name_duplicate,
@@ -8,7 +7,7 @@ from app.api.validators import (access_project_update, check_name_duplicate,
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charity_project_crud
-from app.models import Donation
+from app.crud.donation import donation_crud
 from app.schemas.charity_project import (CharityProjectCreate,
                                          CharityProjectDB,
                                          CharityProjectUpdate)
@@ -28,17 +27,13 @@ async def create_project(
     session: AsyncSession = Depends(get_async_session),
 ):
     await check_name_duplicate(new_project.name, session)
-    execute_donations = await session.execute(
-        select(Donation).where(Donation.fully_invested.is_(False))
+    open_donations = await donation_crud.get_multi_by_attribute(
+        'fully_invested', False, session
     )
-    not_closed_donation = execute_donations.scalars().all()
     new_project = await charity_project_crud.create(
         session, new_project, commit=False
     )
-    updated_objects = invest(new_project, not_closed_donation)
-    for instance in updated_objects:
-        session.add(instance)
-
+    session.add_all(invest(new_project, open_donations))
     await session.commit()
     await session.refresh(new_project)
     return new_project

@@ -26,4 +26,4 @@ class ProjectDonationBase(Base):
             self.create_date,
             self.close_date,
         )
-        return f'{self.__class__.__name__}{attributes}'
+        return f'{self.__class__.__name__} {attributes}'

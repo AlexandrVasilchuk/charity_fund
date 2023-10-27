@@ -78,3 +78,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await session.delete(db_obj)
         await session.commit()
         return db_obj
+
+    async def get_multi_by_attribute(
+        self, attr_name: str, attr_value: str, session: AsyncSession
+    ) -> list[ModelType]:
+        db_objs = await session.execute(
+            select(self.model).where(
+                getattr(self.model, attr_name) == attr_value
+            )
+        )
+        return db_objs.scalars().all()

@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import Column, ForeignKey, Integer, Text
 
 from app.models.base import ProjectDonationBase
@@ -8,4 +10,7 @@ class Donation(ProjectDonationBase):
     comment = Column(Text)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}{self.user_id, self.comment}'
+        attributes = re.sub(
+            r'\)$', f', {self.user_id}, {self.comment})', super().__repr__()
+        )
+        return attributes
