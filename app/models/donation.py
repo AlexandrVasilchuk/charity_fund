@@ -1,5 +1,3 @@
-import re
-
 from sqlalchemy import Column, ForeignKey, Integer, Text
 
 from app.models.base import ProjectDonationBase
