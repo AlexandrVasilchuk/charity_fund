@@ -19,11 +19,11 @@ class ProjectDonationBase(Base):
     close_date = Column(DateTime)
 
     def __repr__(self):
-        attributes = (
+        attributes = map(str, (
             self.full_amount,
             self.invested_amount,
             self.fully_invested,
             self.create_date,
             self.close_date,
-        )
-        return f'{self.__class__.__name__} {attributes}'
+        ))
+        return f'{self.__class__.__name__} {", ".join(attributes)}'
